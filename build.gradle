@@ -49,25 +49,25 @@ wpi.sim.addGui().defaultEnabled = true
 wpi.sim.addDriverstation()
 
 model {
-    platforms {
-        linuxathena {
-            architecture "arm"
-            operatingSystem "linux"
-        }
-    }
+    // platforms {
+    //     linuxathena {
+    //         architecture "arm"
+    //         operatingSystem "linux"
+    //     }
+    // }
     
-    toolChains {
-        gcc(Gcc) {
-            path "/home/foxmoss/.gradle/toolchains/frc/2025/roborio/bin"
-            target("linuxathena") {
-                cCompiler.executable = "arm-frc2025-linux-gnueabi-gcc"
-                cppCompiler.executable = "arm-frc2025-linux-gnueabi-g++"
-                linker.executable = "arm-frc2025-linux-gnueabi-g++"
-                assembler.executable = "arm-frc2025-linux-gnueabi-as"
-                staticLibArchiver.executable = "arm-frc2025-linux-gnueabi-ar"
-            }
-        }
-    }
+    // toolChains {
+    //     gcc(Gcc) {
+    //         path "/home/foxmoss/.gradle/toolchains/frc/2025/roborio/bin"
+    //         target("linuxathena") {
+    //             cCompiler.executable = "arm-frc2025-linux-gnueabi-gcc"
+    //             cppCompiler.executable = "arm-frc2025-linux-gnueabi-g++"
+    //             linker.executable = "arm-frc2025-linux-gnueabi-g++"
+    //             assembler.executable = "arm-frc2025-linux-gnueabi-as"
+    //             staticLibArchiver.executable = "arm-frc2025-linux-gnueabi-ar"
+    //         }
+    //     }
+    // }
 
     components {
         frcUserProgram(NativeExecutableSpec) {
