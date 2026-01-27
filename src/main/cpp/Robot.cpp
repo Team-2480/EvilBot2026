@@ -16,6 +16,7 @@
 #include <units/angle.h>
 #include <units/velocity.h>
 
+#include <cstdio>
 #include <utility>
 
 #include "Constants.h"
@@ -34,22 +35,42 @@ Robot::Robot() {
   // Turning is controlled by the X axis of the right stick.
   m_drive.SetDefaultCommand(frc2::RunCommand(
       [this] {
+        printf("[main] %f, %f\n", m_driveController.GetX(),
+               m_driveController.GetY());
+
         m_drive.Drive(
             -units::meters_per_second_t{frc::ApplyDeadband(
-                m_driverController.GetLeftY(), OIConstants::kDriveDeadband)},
+                m_driveController.GetY(), OIConstants::kDriveDeadband)},
             -units::meters_per_second_t{frc::ApplyDeadband(
-                m_driverController.GetLeftX(), OIConstants::kDriveDeadband)},
+                m_driveController.GetX(), OIConstants::kDriveDeadband)},
             -units::radians_per_second_t{frc::ApplyDeadband(
-                m_driverController.GetRightX(), OIConstants::kDriveDeadband)},
-            true);
+                m_driveController.GetZ(), OIConstants::kDriveDeadband)},
+            true, m_slowMode);
       },
       {&m_drive}));
 }
 
 void Robot::ConfigureButtonBindings() {
-  frc2::JoystickButton(&m_driverController,
-                       frc::XboxController::Button::kRightBumper)
+  // button to stop being pushed
+  frc2::JoystickButton(&m_driveController, 6)  // button 6 on joystick?
       .WhileTrue(new frc2::RunCommand([this] { m_drive.SetX(); }, {&m_drive}));
+  //
+  // slow mode
+  frc2::JoystickButton(&m_driveController, 1)  // trigger
+      .ToggleOnTrue(
+          new frc2::InstantCommand([this]() { m_slowMode = true; }, {}));
+
+  frc2::JoystickButton(&m_driveController, 1)  // trigger
+      .ToggleOnFalse(
+          new frc2::InstantCommand([this]() { m_slowMode = false; }, {}));
+
+  // activate intake
+  frc2::JoystickButton(&m_actionController, frc::XboxController::Button::kA)
+      .ToggleOnTrue(new frc2::InstantCommand(
+          [this] { m_intake.SetIntake(true); }, {&m_intake}));
+  frc2::JoystickButton(&m_actionController, frc::XboxController::Button::kA)
+      .ToggleOnFalse(new frc2::InstantCommand(
+          [this] { m_intake.SetIntake(false); }, {&m_intake}));
 }
 
 frc2::Command* Robot::GetAutonomousCommand() {
@@ -93,8 +114,11 @@ frc2::Command* Robot::GetAutonomousCommand() {
   m_drive.ResetOdometry(exampleTrajectory.InitialPose());
 
   // no auto
-  return new frc2::SequentialCommandGroup(
-      std::move(swerveControllerCommand),
-      frc2::InstantCommand(
-          [this]() { m_drive.Drive(0_mps, 0_mps, 0_rad_per_s, false); }, {}));
+  return new frc2::SequentialCommandGroup(std::move(swerveControllerCommand),
+                                          frc2::InstantCommand(
+                                              [this]() {
+                                                // m_drive.Drive(0_mps, 0_mps,
+                                                // 0_rad_per_s, false);
+                                              },
+                                              {}));
 }

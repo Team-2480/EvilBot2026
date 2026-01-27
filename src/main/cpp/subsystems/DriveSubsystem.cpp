@@ -10,6 +10,10 @@
 #include <units/angular_velocity.h>
 #include <units/velocity.h>
 
+#include <cstdio>
+
+#include <cstdio>
+
 #include "Constants.h"
 
 using namespace DriveConstants;
@@ -44,15 +48,18 @@ void DriveSubsystem::Periodic() {
 
 void DriveSubsystem::Drive(units::meters_per_second_t xSpeed,
                            units::meters_per_second_t ySpeed,
-                           units::radians_per_second_t rot,
-                           bool fieldRelative) {
+                           units::radians_per_second_t rot, bool fieldRelative,
+                           bool slowMode) {
+  printf("[drive] in (%f, %f)", xSpeed.value(), ySpeed.value());
   // Convert the commanded speeds into the correct units for the drivetrain
-  units::meters_per_second_t xSpeedDelivered =
-      xSpeed.value() * DriveConstants::kMaxSpeed;
-  units::meters_per_second_t ySpeedDelivered =
-      ySpeed.value() * DriveConstants::kMaxSpeed;
+  units::meters_per_second_t speedUsed =
+      slowMode ? DriveConstants::kSlowModeSpeed : DriveConstants::kMaxSpeed;
+
+  units::meters_per_second_t xSpeedDelivered = xSpeed.value() * speedUsed;
+  units::meters_per_second_t ySpeedDelivered = ySpeed.value() * speedUsed;
   units::radians_per_second_t rotDelivered =
-      rot.value() * DriveConstants::kMaxAngularSpeed;
+      rot.value() * (slowMode ? DriveConstants::kSlowModeAngularSpeed
+                              : DriveConstants::kMaxAngularSpeed);
 
   auto states = kDriveKinematics.ToSwerveModuleStates(
       fieldRelative
@@ -65,6 +72,9 @@ void DriveSubsystem::Drive(units::meters_per_second_t xSpeed,
   kDriveKinematics.DesaturateWheelSpeeds(&states, DriveConstants::kMaxSpeed);
 
   auto [fl, fr, bl, br] = states;
+
+  printf("[drive] (%f, %f) %fdeg\n", xSpeedDelivered.value(),
+         ySpeedDelivered.value(), rotDelivered.value());
 
   m_frontLeft.SetDesiredState(fl);
   m_frontRight.SetDesiredState(fr);
