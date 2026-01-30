@@ -5,6 +5,7 @@
 #include "DriveSubsystem.h"
 
 #include <frc/geometry/Rotation2d.h>
+#include <frc/smartdashboard/SmartDashboard.h>
 #include <hal/FRCUsageReporting.h>
 #include <units/angle.h>
 #include <units/angular_velocity.h>
@@ -35,6 +36,8 @@ DriveSubsystem::DriveSubsystem()
   // Usage reporting for MAXSwerve template
   HAL_Report(HALUsageReporting::kResourceType_RobotDrive,
              HALUsageReporting::kRobotDriveSwerve_MaxSwerve);
+
+  frc::SmartDashboard::PutData("Field", &m_field);
 }
 
 void DriveSubsystem::Periodic() {
@@ -60,13 +63,13 @@ void DriveSubsystem::Periodic() {
   m_odometry.Update(frc::Rotation2d(robotYaw),
                     {m_frontLeft.GetPosition(), m_rearLeft.GetPosition(),
                      m_frontRight.GetPosition(), m_rearRight.GetPosition()});
+  m_field.SetRobotPose(m_odometry.GetEstimatedPosition());
 }
 
 void DriveSubsystem::Drive(units::meters_per_second_t xSpeed,
                            units::meters_per_second_t ySpeed,
                            units::radians_per_second_t rot, bool fieldRelative,
                            bool slowMode) {
-  printf("[drive] in (%f, %f)", xSpeed.value(), ySpeed.value());
   // Convert the commanded speeds into the correct units for the drivetrain
   units::meters_per_second_t speedUsed =
       slowMode ? DriveConstants::kSlowModeSpeed : DriveConstants::kMaxSpeed;
@@ -88,9 +91,6 @@ void DriveSubsystem::Drive(units::meters_per_second_t xSpeed,
   kDriveKinematics.DesaturateWheelSpeeds(&states, DriveConstants::kMaxSpeed);
 
   auto [fl, fr, bl, br] = states;
-
-  printf("[drive] (%f, %f) %fdeg\n", xSpeedDelivered.value(),
-         ySpeedDelivered.value(), rotDelivered.value());
 
   m_frontLeft.SetDesiredState(fl);
   m_frontRight.SetDesiredState(fr);

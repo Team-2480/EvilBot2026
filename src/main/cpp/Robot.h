@@ -15,10 +15,12 @@
 #include <frc2/command/ParallelRaceGroup.h>
 #include <frc2/command/RunCommand.h>
 
+#include <string>
+
 #include "Constants.h"
+#include "subsystems/Climb.h"
 #include "subsystems/DriveSubsystem.h"
 #include "subsystems/Intake.h"
-#include "subsystems/Climb.h"
 
 /**
  * This class is where the bulk of the robot should be declared.  Since
@@ -48,7 +50,13 @@ class Robot {
   ClimbSubsystem m_climb;
 
   // The chooser for the autonomous routines
-  frc::SendableChooser<frc2::Command*> m_chooser;
+  enum AutoModes {
+    AUTO_NOTHING,
+    AUTO_BLUE_DEFAULT,
+    AUTO_RED_DEFAULT
+
+  };
+  frc::SendableChooser<AutoModes> m_chooser;
 
   void ConfigureButtonBindings();
 };
