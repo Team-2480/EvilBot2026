@@ -5,9 +5,11 @@
 void IntakeSubsystem::Periodic() {
   // send motor info to intake motor
   if (intake_on) {
-    intake_driver.SetControl(intake_driver_speed);
+    intake_driver_controller.SetReference(
+        4, rev::spark::SparkLowLevel::ControlType::kVelocity);
   } else {
-    intake_driver.SetControl(stop_speed);
+    intake_driver_controller.SetReference(
+        0, rev::spark::SparkLowLevel::ControlType::kVelocity);
   }
 }
 

@@ -20,7 +20,7 @@ class IntakeSubsystem : public frc2::SubsystemBase {
         rev::spark::SparkBase::PersistMode::kPersistParameters);
 
     intake_up_down_driver.Configure(
-        IntakeUpDownConfig(),
+        IntakeDriverConfig(),
         rev::spark::SparkBase::ResetMode::kResetSafeParameters,
         rev::spark::SparkBase::PersistMode::kPersistParameters);
 
