@@ -12,6 +12,7 @@ void ShooterSubsystem::Periodic() {
 
   if (shooter_on) {
     shooter_driver.SetControl(shooter_driver_speed);
+    shooter_driver.SetControl(turn_shooter);
   } else {
     shooter_driver.SetControl(stop_speed);
   }

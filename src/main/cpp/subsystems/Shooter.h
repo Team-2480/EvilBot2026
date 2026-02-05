@@ -45,4 +45,7 @@ class ShooterSubsystem : public frc2::SubsystemBase {
 
   ctre::phoenix6::controls::VelocityVoltage stop_speed =
       ctre::phoenix6::controls::VelocityVoltage{0_tps}.WithSlot(0);
+
+  ctre::phoenix6::controls::PositionDutyCycle turn_shooter = 
+    ctre::phoenix6::controls::PositionDutyCycle{0.2_tps}.WithPosition();
 };
