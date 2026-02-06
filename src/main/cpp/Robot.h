@@ -33,7 +33,7 @@ class Robot {
  public:
   Robot();
 
-  frc2::Command* GetAutonomousCommand();
+  frc2::CommandPtr GetAutonomousCommand();
 
  private:
   // The driver's controller

@@ -13,6 +13,7 @@
 #include <frc2/command/SequentialCommandGroup.h>
 #include <frc2/command/SwerveControllerCommand.h>
 #include <frc2/command/button/JoystickButton.h>
+#include <pathplanner/lib/commands/PathPlannerAuto.h>
 #include <units/angle.h>
 #include <units/velocity.h>
 
@@ -24,6 +25,7 @@
 #include "subsystems/DriveSubsystem.h"
 
 using namespace DriveConstants;
+using namespace pathplanner;
 
 Robot::Robot() {
   // Initialize all of your commands and subsystems here
@@ -77,14 +79,7 @@ void Robot::ConfigureButtonBindings() {
           [this] { m_intake.SetIntake(false); }, {&m_intake}));
 }
 
-frc2::Command* Robot::GetAutonomousCommand() {
-  printf("auto used %i\n", m_chooser.GetSelected());
-
-  // no auto
-  return new frc2::SequentialCommandGroup(frc2::InstantCommand(
-      []() {
-        // m_drive.Drive(0_mps, 0_mps,
-        // 0_rad_per_s, false);
-      },
-      {}));
+frc2::CommandPtr Robot::GetAutonomousCommand(){
+    //had to delete the other method for auto cause it broke
+    return PathPlannerAuto("Example Auto").ToPtr();
 }
